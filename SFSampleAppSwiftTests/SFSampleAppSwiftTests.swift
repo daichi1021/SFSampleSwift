@@ -2,7 +2,7 @@
 //  SFSampleAppSwiftTests.swift
 //  SFSampleAppSwiftTests
 //
-//  Created by テラスカイ1 on 2014/12/08.
+//  Created by Daichi Mizoguchi on 2014/12/08.
 //  Copyright (c) 2014年 Daichi Mizoguchi. All rights reserved.
 //
 
