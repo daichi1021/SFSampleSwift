@@ -8,3 +8,4 @@
 #import <SalesforceSDKCore/SFUserAccountManager.h>
 #import <SalesforceCommonUtils/SFLogger.h>
 #import "SFRestAPI+Blocks.h"
+#import <SVProgressHUD.h>

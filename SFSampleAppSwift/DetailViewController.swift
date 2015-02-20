@@ -7,15 +7,12 @@
 //
 
 import UIKit
+import WebKit
 
-class DetailViewController: BaseViewController {
+class DetailViewController: BaseViewController, WKNavigationDelegate {
     
     var accountItem: AccountModel?
-    
-    @IBOutlet weak var idTextField: UITextField!
-    @IBOutlet weak var nameTextField: UITextField!
-    @IBOutlet weak var phoneTextField: UITextField!
-    @IBOutlet weak var addressTextArea: UITextView!
+    var accountWebView: WKWebView?
     
     
     init(nibName: String, accountItem: AccountModel) {
@@ -36,15 +33,56 @@ class DetailViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupDesign()
+        setupWebView()
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        SVProgressHUD.showWithStatus("読み込み中")
+        accountWebView!.loadRequest(createAccountRequest())
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        SVProgressHUD.dismiss()
     }
     
     
-    func setupDesign () {
-        idTextField.text = accountItem?.salesforceId
-        nameTextField.text = accountItem?.accountName
-        phoneTextField.text = accountItem?.phone
-        addressTextArea.text = accountItem?.billingAddress
+    func setupWebView() {
+        accountWebView = WKWebView()
+        self.view = accountWebView!
+        accountWebView!.navigationDelegate = self
+    }
+    
+    
+    func createAccountRequest() -> NSURLRequest {
+        let instanceUrl: String = SFRestAPI.sharedInstance().coordinator.credentials.instanceUrl.description
+        let accessToken: String = SFRestAPI.sharedInstance().coordinator.credentials.accessToken
+        
+        let authUrl: String = instanceUrl + "/secur/frontdoor.jsp?sid=" + accessToken + "&retURL="
+        //let accountUrl: String = instanceUrl + "/" + accountItem!.salesforceId! + "?isdtp=nv"
+        let accountUrl: String = instanceUrl + "/apex/AccountMobile?id=" + accountItem!.salesforceId!
+        let request: NSURL = NSURL(string:authUrl + accountUrl)!
+        let urlRequest: NSURLRequest = NSURLRequest(URL: request)
+        return urlRequest
+    }
+    
+    
+    func webView(webView: WKWebView!, didFinishNavigation navigation: WKNavigation!) {
+        SVProgressHUD.dismiss()
+        self.title = accountWebView!.title
+    }
+    
+    
+    func webView(webView: WKWebView, didFailNavigation navigation: WKNavigation!, withError error: NSError) {
+        SVProgressHUD.dismiss()
+    }
+    
+
+    func webView(webView: WKWebView, decidePolicyForNavigationAction navigationAction: WKNavigationAction, decisionHandler: (WKNavigationActionPolicy) -> Void) {
+        if (navigationAction.request.URL.absoluteString!.hasPrefix("completed://")) {
+            self.navigationController!.popViewControllerAnimated(true)
+        }
+        
+        decisionHandler(WKNavigationActionPolicy.Allow)
     }
 
 }
