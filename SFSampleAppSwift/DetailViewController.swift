@@ -33,16 +33,22 @@ class DetailViewController: BaseViewController, WKNavigationDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupDesign()
         setupWebView()
     }
     
     override func viewWillAppear(animated: Bool) {
-        SVProgressHUD.showWithStatus("読み込み中")
         accountWebView!.loadRequest(createAccountRequest())
     }
     
     override func viewDidDisappear(animated: Bool) {
         SVProgressHUD.dismiss()
+    }
+    
+    
+    func setupDesign() {
+        let refreshButton: UIBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Refresh, target: self, action: "tapRefleshButton")
+        self.navigationItem.rightBarButtonItem = refreshButton
     }
     
     
@@ -58,11 +64,15 @@ class DetailViewController: BaseViewController, WKNavigationDelegate {
         let accessToken: String = SFRestAPI.sharedInstance().coordinator.credentials.accessToken
         
         let authUrl: String = instanceUrl + "/secur/frontdoor.jsp?sid=" + accessToken + "&retURL="
-        //let accountUrl: String = instanceUrl + "/" + accountItem!.salesforceId! + "?isdtp=nv"
         let accountUrl: String = instanceUrl + "/apex/AccountMobile?id=" + accountItem!.salesforceId!
         let request: NSURL = NSURL(string:authUrl + accountUrl)!
         let urlRequest: NSURLRequest = NSURLRequest(URL: request)
         return urlRequest
+    }
+    
+    
+    func webView(webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        SVProgressHUD.showWithStatus("読み込み中")
     }
     
     
@@ -83,6 +93,11 @@ class DetailViewController: BaseViewController, WKNavigationDelegate {
         }
         
         decisionHandler(WKNavigationActionPolicy.Allow)
+    }
+    
+    
+    func tapRefleshButton() {
+        accountWebView!.reload()
     }
 
 }

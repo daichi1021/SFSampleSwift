@@ -36,14 +36,14 @@ class RootViewController: BaseViewController, UITableViewDelegate, UITableViewDa
     }
     
     
-    func setupDesign () {
+    func setupDesign() {
         self.title = "AccountTable"
         let logoutButton: UIBarButtonItem = UIBarButtonItem(title: "Logout", style: .Plain, target: self, action: "tapLogoutButton")
         self.navigationItem.leftBarButtonItem = logoutButton
     }
     
     
-    func setupTableView () {
+    func setupTableView() {
         userTableView.delegate = self
         userTableView.dataSource = self
     }
@@ -86,7 +86,7 @@ class RootViewController: BaseViewController, UITableViewDelegate, UITableViewDa
     }
     
     
-    func tapLogoutButton () {
+    func tapLogoutButton() {
         SFAuthenticationManager.sharedManager().logout()
     }
     
