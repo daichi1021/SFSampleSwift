@@ -9,7 +9,7 @@
 import UIKit
 import WebKit
 
-class DetailViewController: BaseViewController, WKNavigationDelegate {
+class DetailViewController: BaseViewController, WKNavigationDelegate, SFOAuthCoordinatorDelegate {
     
     var accountItem: AccountModel?
     var accountWebView: WKWebView?
@@ -21,7 +21,7 @@ class DetailViewController: BaseViewController, WKNavigationDelegate {
     }
 
     
-    required override init(coder aDecoder: NSCoder) {
+    required  init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
@@ -33,12 +33,14 @@ class DetailViewController: BaseViewController, WKNavigationDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        SFRestAPI.sharedInstance().coordinator.delegate = self;
         setupDesign()
         setupWebView()
     }
     
     override func viewWillAppear(animated: Bool) {
-        accountWebView!.loadRequest(createAccountRequest())
+        SVProgressHUD.showWithStatus("認証中")
+        SFRestAPI.sharedInstance().coordinator.authenticate()
     }
     
     override func viewDidDisappear(animated: Bool) {
@@ -76,7 +78,7 @@ class DetailViewController: BaseViewController, WKNavigationDelegate {
     }
     
     
-    func webView(webView: WKWebView!, didFinishNavigation navigation: WKNavigation!) {
+    func webView(webView: WKWebView, didFinishNavigation navigation: WKNavigation!) {
         SVProgressHUD.dismiss()
         self.title = accountWebView!.title
     }
@@ -88,7 +90,7 @@ class DetailViewController: BaseViewController, WKNavigationDelegate {
     
 
     func webView(webView: WKWebView, decidePolicyForNavigationAction navigationAction: WKNavigationAction, decisionHandler: (WKNavigationActionPolicy) -> Void) {
-        if (navigationAction.request.URL.absoluteString!.hasPrefix("completed://")) {
+        if (navigationAction.request.URL!.absoluteString!.hasPrefix("completed://")) {
             self.navigationController!.popViewControllerAnimated(true)
         }
         
@@ -99,5 +101,12 @@ class DetailViewController: BaseViewController, WKNavigationDelegate {
     func tapRefleshButton() {
         accountWebView!.reload()
     }
+    
+    func oauthCoordinatorDidAuthenticate(coordinator: SFOAuthCoordinator!, authInfo info: SFOAuthInfo!) {
+        SVProgressHUD.dismiss()
+        accountWebView!.loadRequest(createAccountRequest())
+    }
+    
+    func oauthCoordinator(coordinator: SFOAuthCoordinator!, didBeginAuthenticationWithView view: UIWebView!) {}
 
 }

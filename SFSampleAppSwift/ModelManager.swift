@@ -39,8 +39,8 @@ class ModelManager : NSObject {
     // 引数のタイプによってインスタンス化するモデルを切り替え
     func createModel(type: String, record: AnyObject) -> BaseModel {
         if (type == AccountModel.description()) {
-            return AccountModel(record: record as NSDictionary)
+            return AccountModel(record: record as! NSDictionary)
         }
-        return BaseModel(record: record as NSDictionary)
+        return BaseModel(record: record as! NSDictionary)
     }
 }

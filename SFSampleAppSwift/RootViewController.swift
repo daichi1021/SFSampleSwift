@@ -17,6 +17,10 @@ class RootViewController: BaseViewController, UITableViewDelegate, UITableViewDa
     override init(nibName nibNameOrNil: String!, bundle nibBundleOrNil: NSBundle!) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
+
+    required init(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     
     override func didReceiveMemoryWarning() {
@@ -50,6 +54,7 @@ class RootViewController: BaseViewController, UITableViewDelegate, UITableViewDa
     
     
     override func queryCompleted(result :[NSObject:AnyObject]!, tag: Int) {
+        println(result)
         // モデルのタイプを指定してインスタンス化
         let userManager :ModelManager =  ModelManager(modelType: AccountModel.description())
         
@@ -57,7 +62,7 @@ class RootViewController: BaseViewController, UITableViewDelegate, UITableViewDa
         userManager.setRecords(result)
         
         // BaseModelクラスで返って来るので、指定したクラスにキャストする
-        self.accountItems = userManager.getRecords() as [AccountModel]
+        self.accountItems = userManager.getRecords() as! [AccountModel]
         
         dispatch_async_main {
             self.userTableView.reloadData()

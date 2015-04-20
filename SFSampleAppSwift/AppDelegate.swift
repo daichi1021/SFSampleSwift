@@ -108,7 +108,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 self.window?.rootViewController?.presentViewController(userSwitchVc, animated: true, completion: nil)
             } else {
                 if (allAccounts?.count == 1) {
-                    SFUserAccountManager.sharedInstance().currentUser = SFUserAccountManager.sharedInstance().allUserAccounts[0] as SFUserAccount
+                    SFUserAccountManager.sharedInstance().currentUser = SFUserAccountManager.sharedInstance().allUserAccounts[0] as! SFUserAccount
                 }
                 SalesforceSDKManager.sharedManager().launch()
             }
